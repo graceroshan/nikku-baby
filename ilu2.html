@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uyên Nhi</title>
+    <link rel="shortcut icon" href="./icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="ilu2.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- 🎵 Song will be set dynamically from sessionStorage -->
+    <audio id="bgMusic" loop></audio>
+
+    <div id="drag-container">
+        <div id="spin-container">
+
+            <img src="nikki1.jpeg" alt="">
+            <img src="nikki2.jpeg" alt="">
+            <img src="nikki3.jpeg" alt="">
+            <img src="nikki4.jpeg" alt="">
+            <img src="nikki5.jpeg" alt="">
+            <img src="nikki6.jpeg" alt="">
+            <img src="nikki7.jpeg" alt="">
+            <img src="nikki8.jpeg" alt="">
+
+
+            <p>LOVE YOU <span> </span>NIKKU</p>
+            <!-- ❌ Button removed -->
+        </div>
+        <div id="ground"></div>
+    </div>
+
+    <div id="music-container"></div>
+    <div id="canva">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js'></script>
+    <script src="ilu2.js"></script>
+
+    <!-- ===== 🎵 AUTO PLAY + DELAYED ANIMATION ===== -->
+    <script>
+(function () {
+    var audio = document.getElementById("bgMusic");
+    var savedSong = sessionStorage.getItem('loveSong') || 'loveaudio2.mp3';
+    var savedTime = parseFloat(sessionStorage.getItem('loveSongTime')) || 0;
+
+    audio.src = savedSong;
+    audio.volume = 0.75;
+
+    var started = false;
+
+    function startSong() {
+        if (started) return;
+        started = true;
+
+        var p = audio.play();
+        if (p !== undefined) {
+            p.then(function () {
+                // Seek only if resumed from a saved point
+                if (savedTime > 0) {
+                    try { audio.currentTime = savedTime; } catch (e) {}
+                }
+                // Clear saved time so next visit starts fresh
+                sessionStorage.setItem('loveSongTime', '0');
+            }).catch(function (err) {
+                console.log('Playback blocked:', err);
+                started = false;
+                // Fallback: first user click resumes
+                document.addEventListener('click', function once() {
+                    startSong();
+                    document.removeEventListener('click', once);
+                }, { once: true });
+            });
+        }
+    }
+
+    // 🔹 Play song once on page load
+    startSong();
+
+    // 🔹 After 1 second: start photo animation + spin
+    setTimeout(function () {
+        init();
+        var spin = document.getElementById("spin-container");
+        if (spin) spin.style.animationPlayState = "running";
+
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 120,
+                spread: 90,
+                origin: { y: 0.6 },
+                colors: ['#ff2d6f', '#ff6ec7', '#ffcc00', '#b026ff']
+            });
+        }
+    }, 1000);
+})();
+</script>
+
+</body>
+</html>
